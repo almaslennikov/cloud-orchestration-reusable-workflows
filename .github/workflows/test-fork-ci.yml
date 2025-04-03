@@ -25,7 +25,7 @@ jobs:
         uses: convictional/trigger-workflow-and-wait@v1.6.5
         with:
           github_token: ${{ secrets.GH_TOKEN_NVIDIA_CI_CD }}
-          ref: refs/heads/main # branch of cloud-orchestration-reusable-workflows-testing to use
+          ref: refs/heads/testing-main # branch of cloud-orchestration-reusable-workflows-testing to use
           repo: cloud-orchestration-reusable-workflows-testing
           owner: ${{ github.repository_owner }}
           wait_workflow: true
