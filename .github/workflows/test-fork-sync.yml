@@ -1,0 +1,65 @@
+name: Test Fork Sync workflow
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-test-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create fake upstream and release branches
+        run: |
+          UPSTREAM="upstream-test-sync-${{ github.head_ref || github.ref }}"
+          # branch with 'zzz' should always come up last when sorted lexicographically
+          RELEASE="network-operator-zzz-test-sync-${{ github.head_ref || github.ref }}"
+
+          git checkout -b $UPSTREAM main
+          git commit --allow-empty -m "test upstream commit from $UPSTREAM"
+          git push origin $UPSTREAM
+
+          git checkout -b $RELEASE main
+          git commit --allow-empty -m "test downstream commit from $RELEASE"
+          git push origin $RELEASE
+      - name: Store branch names
+        id: store-branch-names
+        run: |
+          echo UPSTREAM=$UPSTREAM >> $GITHUB_OUTPUT
+          echo RELEASE=$RELEASE >> $GITHUB_OUTPUT
+    outputs:
+      upstream-branch: ${{ steps.store-branch-names.outputs.UPSTREAM }}
+      release-branch: ${{ steps.store-branch-names.outputs.RELEASE }}
+
+  run-sync:
+    needs: create-test-environment
+    uses: ./.github/workflows/fork-sync-reusable.yml
+    with:
+      default-branch: ${{ needs.create-test-environment.outputs.upstream-branch }}
+      upstream-owner: ${{ github.repository_owner }}
+
+  cleanup:
+    if: always()
+    env:
+      GH_TOKEN: ${{ github.token }}
+    needs:
+      - create-test-environment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Delete all branches that might have been created in the repo
+        env:
+          RELEASE_BRANCH: ${{ needs.create-test-environment.outputs.release-branch }}
+          UPSTREAM_BRANCH: ${{ needs.create-test-environment.outputs.upstream-branch }}
+        run: |
+          if [ -n "$RELEASE_BRANCH" ]; then
+            echo "Deleting branch $RELEASE_BRANCH from origin..."
+            git push origin --delete "$RELEASE_BRANCH"
+          fi
+
+          if [ -n "$UPSTREAM_BRANCH" ]; then
+            echo "Deleting branch $UPSTREAM_BRANCH from origin..."
+            git push origin --delete "$UPSTREAM_BRANCH"
+          fi
