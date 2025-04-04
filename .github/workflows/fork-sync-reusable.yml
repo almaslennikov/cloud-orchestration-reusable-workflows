@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Sync
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_NVIDIA_CI_CD }}  # classic personal access token permissions: `repo:*,workflow:*`
+          GH_TOKEN: ${{ secrets.gh_token }}  # classic personal access token permissions: `repo:*,workflow:*`
         run: |
           gh repo sync ${{ github.repository }} --source ${{ inputs.upstream-owner }}/${{ github.event.repository.name }} --branch ${{ inputs.default-branch }}
 
@@ -53,6 +53,9 @@ jobs:
           git fetch upstream ${{ inputs.default-branch }}
       - name: Rebase onto upstream branch
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git rebase upstream/${{ inputs.default-branch }}
       - name: Push rebased branch
         env:
