@@ -1,4 +1,4 @@
-name: Test Fork CI
+name: Caller Workflow to test Fork CI pipeline
 
 permissions: write-all
 
@@ -68,7 +68,7 @@ jobs:
       exclude-chart-files: '["Chart.yaml", "new-file-to-exclude"]'
       ref-name: ${{ inputs.ref_name }}
       ref-type: ${{ inputs.ref_type }}
-      network-operator-repo: reusable-release-workflows
+      network-operator-repo: cloud-orchestration-reusable-workflows
     secrets:
       registry-username: ${{ github.repository_owner }}
       registry-token: ${{ secrets.GITHUB_TOKEN }}
