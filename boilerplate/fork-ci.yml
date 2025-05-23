@@ -15,6 +15,8 @@ jobs:
       registry-internal: nvcr.io/nvstaging/mellanox
       service-account-username: nvidia-ci-cd
       service-account-email: svc-cloud-orch-gh@nvidia.com
+      # For the component name, use the name of the component from https://github.com/Mellanox/network-operator/blob/master/hack/release.yaml
+      # Otherwise, it won't be able to update the versions correctly
       components: '[{"name": "nicConfigurationOperator", "imageName": "reusable-release-workflows-testing", "Dockerfile": "Dockerfile.test"},
             {"name": "nicConfigurationConfigDaemon", "imageName": "another-reusable-release-workflows-testing", "Dockerfile": "Dockerfile.another-test"}]'
       chart-name: node-feature-discovery
