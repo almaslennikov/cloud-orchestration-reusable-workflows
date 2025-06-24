@@ -47,6 +47,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.lookup-most-recent-release-branch.outputs.most_recent_release_branch }}
+          fetch-depth: 0
       - name: Add upstream and fetch
         run: |
           git remote add upstream https://github.com/${{ inputs.upstream-owner }}/${{ github.event.repository.name }}.git
