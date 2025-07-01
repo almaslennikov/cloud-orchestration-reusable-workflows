@@ -11,6 +11,14 @@ on:
         description: "Owner of the upstream repo on Github"
         required: true
         type: string
+      service-account-username:
+        description: "Name of the GH service account to push changes"
+        type: string
+        required: false
+      service-account-email:
+        description: "E-mail, associated with the GH service account"
+        type: string
+        required: false 
     secrets:
       gh_token:
         description: "GH token for the CI/CD account"
@@ -54,8 +62,8 @@ jobs:
           git fetch upstream ${{ inputs.default-branch }}
       - name: Rebase onto upstream branch
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name ${{inputs.service-account-username || 'github-actions[bot]'}}
+          git config user.email ${{inputs.service-account-email || 'github-actions[bot]@users.noreply.github.com'}}
 
           git rebase upstream/${{ inputs.default-branch }}
       - name: Push rebased branch
