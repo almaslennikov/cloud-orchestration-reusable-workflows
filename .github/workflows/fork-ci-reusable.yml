@@ -191,9 +191,13 @@ jobs:
             done
           fi
 
-          echo "Files to be committed: $(git diff --cached --name-only)"
-          git commit -sm "$COMMIT_MESSAGE"
-          git reset --hard
+          # If there are changes to be committed
+          if ! git diff --cached --quiet; then
+            echo "Files to be committed: $(git diff --cached --name-only)"
+            git commit -sm "$COMMIT_MESSAGE"
+            git reset --hard
+          fi
+          
           if ! git diff --color --unified=0 --exit-code; then
             echo "There are untracked files still in the repo"
             exit 1
