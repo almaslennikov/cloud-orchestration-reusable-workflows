@@ -11,6 +11,14 @@ on:
         description: "Owner of the upstream repo on Github"
         required: true
         type: string
+      service-account-username:
+        description: "Name of the GH service account to push changes"
+        type: string
+        required: false
+      service-account-email:
+        description: "E-mail, associated with the GH service account"
+        type: string
+        required: false 
     secrets:
       gh_token:
         description: "GH token for the CI/CD account"
@@ -48,19 +56,17 @@ jobs:
         with:
           ref: ${{ needs.lookup-most-recent-release-branch.outputs.most_recent_release_branch }}
           fetch-depth: 0
+          token: ${{ secrets.gh_token }}
       - name: Add upstream and fetch
         run: |
           git remote add upstream https://github.com/${{ inputs.upstream-owner }}/${{ github.event.repository.name }}.git
           git fetch upstream ${{ inputs.default-branch }}
       - name: Rebase onto upstream branch
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
+          git config user.name ${{inputs.service-account-username || 'github-actions[bot]'}}
+          git config user.email ${{inputs.service-account-email || 'github-actions[bot]@users.noreply.github.com'}}
           git rebase upstream/${{ inputs.default-branch }}
       - name: Push rebased branch
-        env:
-          GH_TOKEN: ${{ secrets.gh_token }}
         run: |
           git push origin ${{ needs.lookup-most-recent-release-branch.outputs.most_recent_release_branch }} --force-with-lease
 
