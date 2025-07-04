@@ -185,6 +185,7 @@ jobs:
               if echo "$EXCLUDED_FILES" | jq -e --arg value "$REL_PATH" 'index($value) != null' > /dev/null; then
                 echo "Exclude chart file $file from update"
                 git restore --staged $file
+                git checkout $file || true
               else
                 echo "Update chart file $file"
               fi
