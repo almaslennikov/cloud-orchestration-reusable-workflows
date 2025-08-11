@@ -56,6 +56,9 @@ on:
       cicd-gh-token:
         description: "Github auth token with permissions to create pull requests in the network-operator repo"
         required: true
+      goproxy:
+        description: "GOPROXY url for go modules"
+        required: true
     outputs:
       docker-tag:
         description: "Docker tag used to build images"
@@ -99,11 +102,12 @@ jobs:
     needs:
       - determine_ref
       - determine_docker_registry_and_tag
-    runs-on: ubuntu-latest
+    runs-on: linux-amd64-cpu4
     env:
       BUILD_PLATFORMS: linux/amd64,linux/arm64
       DOCKER_REGISTRY: ${{ needs.determine_docker_registry_and_tag.outputs.docker_registry }}
       DOCKER_TAG: ${{ needs.determine_docker_registry_and_tag.outputs.docker_tag }}
+      GOPROXY: ${{ secrets.goproxy }}
     strategy:
       matrix:
         component: ${{ fromJSON(inputs.components) }}
