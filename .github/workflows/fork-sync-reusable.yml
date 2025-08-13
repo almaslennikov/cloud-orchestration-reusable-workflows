@@ -37,7 +37,7 @@ jobs:
           echo most_recent_release_branch=$most_recent_release_branch | tee -a $GITHUB_OUTPUT
 
           most_recent_release_branch_major_minor=$(echo $most_recent_release_branch | cut -d '-' -f 3 | sed 's/.x//')  # example: 25.10
-          if git branch --remotes --sort refname | grep $most_recent_release_branch_major_minor | grep rc; then
+          if git tag --list | grep $most_recent_release_branch_major_minor | grep rc; then
             echo release_branch_has_rc_tag=true | tee -a $GITHUB_OUTPUT
           else
             echo release_branch_has_rc_tag=false | tee -a $GITHUB_OUTPUT
