@@ -58,7 +58,7 @@ on:
         required: true
       goproxy:
         description: "GOPROXY url for go modules"
-        required: true
+        required: false
     outputs:
       docker-tag:
         description: "Docker tag used to build images"
@@ -107,7 +107,7 @@ jobs:
       BUILD_PLATFORMS: linux/amd64,linux/arm64
       DOCKER_REGISTRY: ${{ needs.determine_docker_registry_and_tag.outputs.docker_registry }}
       DOCKER_TAG: ${{ needs.determine_docker_registry_and_tag.outputs.docker_tag }}
-      GOPROXY: ${{ secrets.goproxy }}
+      GOPROXY: ${{ secrets.goproxy || 'direct' }}
     strategy:
       matrix:
         component: ${{ fromJSON(inputs.components) }}
