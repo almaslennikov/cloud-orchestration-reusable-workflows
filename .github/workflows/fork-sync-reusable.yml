@@ -33,7 +33,15 @@ jobs:
         id: lookup-most-recent-release-branch
         run: |
           git fetch --all --tags
-          most_recent_release_branch=$(git branch --remotes --sort refname | grep network-operator- | tail -n 1 | cut -d '/' -f 2-)  # example: network-operator-25.10.x
+          most_recent_release_branch=$(
+            git branch -r \
+              | grep 'network-operator-[0-9]*\.[0-9]*\.x' \
+              | sed 's#.*/##' \
+              | sed 's/network-operator-//' \
+              | sort -V \
+              | tail -n 1 \
+              | xargs -I{} echo "network-operator-{}"
+          )
           echo most_recent_release_branch=$most_recent_release_branch | tee -a $GITHUB_OUTPUT
 
           most_recent_release_branch_major_minor=$(echo $most_recent_release_branch | cut -d '-' -f 3 | sed 's/.x//')  # example: 25.10
