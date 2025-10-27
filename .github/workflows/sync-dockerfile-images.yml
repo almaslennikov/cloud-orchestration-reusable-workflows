@@ -43,7 +43,7 @@ jobs:
       - name: Create Pull Request
         if: steps.update.outputs.changed == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN_NVIDIA_CI_CD }}
         run: |
           git config user.name "Alexander Maslennikov"
           git config user.email "amaslennikov@nvidia.com"
